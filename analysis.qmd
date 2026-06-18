@@ -6,18 +6,23 @@ execute:
   echo: false
 ---
 
-\`\`\`{r}
+```{r}
 #| include: false
 suppressPackageStartupMessages(library(tidyverse))
-\`\`\`
+```
 
-\`\`\`{r}
+```{r}
 storms |>
-  distinct(year, name) |>
-  count(year) |>
-  ggplot(aes(x = year, y = n)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Named Storms per Year", x = "Year", y = "Count") +
+  filter(status %in% c("tropical depression", "tropical storm", "hurricane")) |>
+  distinct(year, name, status) |>
+  count(year, status) |>
+  mutate(status = factor(status, levels = c("tropical depression", "tropical storm", "hurricane"))) |>
+  ggplot(aes(x = year, y = n, fill = status)) +
+  geom_area() +
+  scale_fill_manual(values = c("tropical depression" = "#a8d8ea",
+                                "tropical storm" = "#f4a261",
+                                "hurricane" = "#8b0000")) +
+  labs(title = "Storm Types per Year",
+       x = "Year", y = "Count", fill = "Storm Type") +
   theme_minimal()
-\`\`\`
+```
